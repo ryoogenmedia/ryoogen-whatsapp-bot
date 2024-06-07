@@ -2,7 +2,7 @@
   "dependencies": {
     "venom-bot": "^5.1.0"
   },
-  "name": "server-whatsapp-venom",
+  "name": "ryoogen-whatsapp-bot",
   "version": "1.0.0",
   "description": "Whatsapp Api Ryoogen Media",
   "main": "index.js",
@@ -18,5 +18,13 @@
     "Ryoogen"
   ],
   "author": "Muhammad Bintang",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryoogenmedia/ryoogen-whatsapp-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ryoogenmedia/ryoogen-whatsapp-bot/issues"
+  },
+  "homepage": "https://github.com/ryoogenmedia/ryoogen-whatsapp-bot#readme"
 }
