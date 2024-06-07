@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "venom-bot": "^5.1.0"
+  },
+  "name": "server-whatsapp-venom",
+  "version": "1.0.0",
+  "description": "Whatsapp Api Ryoogen Media",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Whatsapp",
+    "Api",
+    "Venom",
+    "With",
+    "Ryoogen"
+  ],
+  "author": "Muhammad Bintang",
+  "license": "ISC"
+}
