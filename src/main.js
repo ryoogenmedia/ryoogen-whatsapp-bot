@@ -41,8 +41,9 @@ venom
     console.log("Error starting Venom:", erro);
   });
 
+// *HELPERS FUNCTION
 /**
- * helpers check client
+ *
  * @param {object} client
  * @param {*} res
  * @returns object
@@ -124,7 +125,31 @@ app.get("/api/device/connection-state", async (res, next) => {
 app.get("/api/device/battery", async (res, next) => {
   checkClient(client);
 
-  const result = client;
+  const result = client.getBatteryLevel();
+
+  try {
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    res.status(505).json({
+      error: e.message,
+    });
+  }
+});
+
+app.get("/api/device/status-connected", async (res, next) => {
+  const result = client.isConnected();
+
+  try {
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+    });
+  }
 });
 
 /**
