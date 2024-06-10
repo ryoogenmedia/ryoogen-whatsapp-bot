@@ -51,6 +51,22 @@ function checkClient(client, res) {
   }
 }
 
+app.get("/api/device-disconnect", async (res, next) => {
+  checkClient(client);
+
+  const result = await client.logout();
+
+  try {
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+    });
+  }
+});
+
 app.get("/api/get-qrcode", async (req, res, next) => {
   if (client) {
     res.status(200).json({
