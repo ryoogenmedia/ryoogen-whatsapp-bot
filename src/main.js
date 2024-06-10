@@ -48,10 +48,24 @@ venom
  * @param {*} res
  * @returns object
  */
-function checkClient(client, res) {
+function checkClient(res) {
   if (!client) {
     return res.status(500).json({ error: "Venom client not initialized" });
   }
+}
+
+async function versionWhatsapp() {
+  if (client) {
+    const result = await client.isConnected();
+
+    try {
+      return result;
+    } catch (e) {
+      return e.message;
+    }
+  }
+
+  return;
 }
 
 /**
@@ -59,13 +73,16 @@ function checkClient(client, res) {
  */
 
 app.get("/api/device/disconnect", async (res, next) => {
-  checkClient(client);
+  checkClient(res);
 
   const result = await client.logout();
+
+  const version = versionWhatsapp();
 
   try {
     res.status(200).json({
       data: result,
+      version: version,
     });
   } catch (e) {
     res.status(500).json({
@@ -75,13 +92,16 @@ app.get("/api/device/disconnect", async (res, next) => {
 });
 
 app.get("/api/device/delete", async (res, next) => {
-  checkClient(client);
+  checkClient(res);
 
   const result = await client.killServiceWorker();
+
+  const version = versionWhatsapp();
 
   try {
     res.status(200).json({
       data: result,
+      version: version,
     });
   } catch (e) {
     res.status(500).json({
@@ -91,13 +111,16 @@ app.get("/api/device/delete", async (res, next) => {
 });
 
 app.get("/api/device/restart", async (res, next) => {
-  checkClient(client);
+  checkClient(res);
 
   const result = client.restartService();
+
+  const version = versionWhatsapp();
 
   try {
     res.status(200).json({
       data: result,
+      version: version,
     });
   } catch (e) {
     res.status(500).json({
@@ -107,13 +130,16 @@ app.get("/api/device/restart", async (res, next) => {
 });
 
 app.get("/api/device/connection-state", async (res, next) => {
-  checkClient(client);
+  checkClient(res);
 
   const result = client.getConnectionState();
+
+  const version = versionWhatsapp();
 
   try {
     res.status(200).json({
       data: result,
+      version: version,
     });
   } catch (e) {
     res.status(500).json({
@@ -123,13 +149,16 @@ app.get("/api/device/connection-state", async (res, next) => {
 });
 
 app.get("/api/device/battery", async (res, next) => {
-  checkClient(client);
+  checkClient(res);
 
   const result = client.getBatteryLevel();
+
+  const version = versionWhatsapp();
 
   try {
     res.status(200).json({
       data: result,
+      version: version,
     });
   } catch (e) {
     res.status(505).json({
@@ -157,9 +186,12 @@ app.get("/api/device/status-connected", async (res, next) => {
  */
 app.get("/api/get-qrcode", async (res, next) => {
   if (client) {
+    const version = versionWhatsapp();
+
     res.status(200).json({
       status_session: statusSessionScan,
       sessionName: sessionName,
+      version: version,
     });
   } else {
     res.status(200).json({
@@ -181,26 +213,36 @@ app.get("/api/get-qrcode", async (res, next) => {
  * API SEND (TEXT, IMAGE)
  */
 app.post("/api/send/text", async (req, res, next) => {
-  checkClient(client, res);
+  checkClient(res);
 
   const { from, text } = req.body;
 
+  const version = versionWhatsapp();
+
   try {
     const result = await client.sendText(from, text);
-    res.status(200).json({ data: result });
+    res.status(200).json({
+      data: result,
+      version: version,
+    });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
 
 app.post("/api/send/image", async (req, res, next) => {
-  checkClient(client, res);
+  checkClient(res);
 
   const { from, image, image_name, caption } = req.body;
 
+  const version = versionWhatsapp();
+
   try {
     const result = await client.sendImage(from, image, image_name, caption);
-    res.status(200).json({ data: result });
+    res.status(200).json({
+      data: result,
+      version: version,
+    });
   } catch (e) {
     console.error("Error sending image:", e);
     res.status(500).json({ error: e.message });
