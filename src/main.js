@@ -11,9 +11,7 @@ app.use(bodyParser.json());
 let client;
 
 var infoAttempts;
-var asciiQRCode;
 var base64QR;
-var urlCodeQR;
 var statusSessionScan;
 var sessionName;
 
@@ -29,8 +27,6 @@ venom
     (base64Qrimg, asciiQR, attempts, urlCode) => {
       infoAttempts = attempts;
       base64QR = base64Qrimg;
-      asciiQRCode = asciiQR;
-      urlCodeQR = urlCode;
     },
     (statusSession, session) => {
       statusSessionScan = statusSession;
@@ -45,11 +41,21 @@ venom
     console.log("Error starting Venom:", erro);
   });
 
+/**
+ * helpers check client
+ * @param {object} client
+ * @param {*} res
+ * @returns object
+ */
 function checkClient(client, res) {
   if (!client) {
     return res.status(500).json({ error: "Venom client not initialized" });
   }
 }
+
+/**
+ * DEVICE API
+ */
 
 app.get("/api/device/disconnect", async (res, next) => {
   checkClient(client);
@@ -68,7 +74,7 @@ app.get("/api/device/disconnect", async (res, next) => {
 });
 
 app.get("/api/device/delete", async (res, next) => {
-  checkClient();
+  checkClient(client);
 
   const result = await client.killServiceWorker();
 
@@ -99,6 +105,31 @@ app.get("/api/device/restart", async (res, next) => {
   }
 });
 
+app.get("/api/device/connection-state", async (res, next) => {
+  checkClient(client);
+
+  const result = client.getConnectionState();
+
+  try {
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+    });
+  }
+});
+
+app.get("/api/device/battery", async (res, next) => {
+  checkClient(client);
+
+  const result = client;
+});
+
+/**
+ * GET QR CODE & STATUS
+ */
 app.get("/api/get-qrcode", async (res, next) => {
   if (client) {
     res.status(200).json({
@@ -121,6 +152,9 @@ app.get("/api/get-qrcode", async (res, next) => {
   });
 });
 
+/**
+ * API SEND (TEXT, IMAGE)
+ */
 app.post("/api/send/text", async (req, res, next) => {
   checkClient(client, res);
 
@@ -148,6 +182,9 @@ app.post("/api/send/image", async (req, res, next) => {
   }
 });
 
+/**
+ * HELPERS START SERVER EXPRESS JS
+ */
 function startServer() {
   app.listen(port, () => {
     console.log(`Express server listening on port ${port}`);
