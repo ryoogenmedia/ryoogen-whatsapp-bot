@@ -15,10 +15,10 @@ var base64QR;
 var statusSessionScan;
 var sessionName;
 
-// Mulai server Express segera
+// * START SERVER EXPRESS
 startServer();
 
-// Inisialisasi Venom
+// * INITIALITATION VENOM SERVER
 venom
   .create(
     {
@@ -41,7 +41,8 @@ venom
     console.log("Error starting Venom:", erro);
   });
 
-// *HELPERS FUNCTION
+// * HELPERS FUNCTION
+
 /**
  *
  * @param {object} client
@@ -54,6 +55,10 @@ function checkClient(res) {
   }
 }
 
+/**
+ *
+ * @returns object
+ */
 async function versionWhatsapp() {
   if (client) {
     const result = await client.isConnected();
@@ -68,9 +73,7 @@ async function versionWhatsapp() {
   return;
 }
 
-/**
- * DEVICE API
- */
+// * DEVICE API
 
 app.get("/api/device/disconnect", async (res, next) => {
   checkClient(res);
@@ -181,9 +184,8 @@ app.get("/api/device/status-connected", async (res, next) => {
   }
 });
 
-/**
- * GET QR CODE & STATUS
- */
+// * GET QR CODE & STATUS SCAN
+
 app.get("/api/get-qrcode", async (res, next) => {
   if (client) {
     const version = versionWhatsapp();
@@ -209,9 +211,8 @@ app.get("/api/get-qrcode", async (res, next) => {
   });
 });
 
-/**
- * API SEND (TEXT, IMAGE)
- */
+// * API SEND (TEXT, IMAGE)
+
 app.post("/api/send/text", async (req, res, next) => {
   checkClient(res);
 
@@ -249,9 +250,8 @@ app.post("/api/send/image", async (req, res, next) => {
   }
 });
 
-/**
- * HELPERS START SERVER EXPRESS JS
- */
+// * FUNCTION START SERVER EXPRESS
+
 function startServer() {
   app.listen(port, () => {
     console.log(`Express server listening on port ${port}`);
