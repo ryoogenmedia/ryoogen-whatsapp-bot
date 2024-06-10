@@ -73,6 +73,40 @@ async function versionWhatsapp() {
   return;
 }
 
+// * PROFILE API
+
+app.post("/api/profile", async (req, res, next) => {
+  checkClient(res);
+
+  const { status, name, picture } = req.body;
+
+  if (status) {
+    await client.setProfileStatus(status);
+  }
+
+  if (name) {
+    await client.setProfileName(name);
+  }
+
+  if (picture) {
+    await client.setProfilePic(picture);
+  }
+
+  const result = await client.getHostDevice();
+  const version = versionWhatsapp();
+
+  try {
+    res.status(200).json({
+      data: result,
+      version: version,
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+    });
+  }
+});
+
 // * DEVICE API
 
 app.get("/api/device/disconnect", async (res, next) => {
