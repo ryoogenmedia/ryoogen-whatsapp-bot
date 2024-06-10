@@ -51,7 +51,7 @@ function checkClient(client, res) {
   }
 }
 
-app.get("/api/device-disconnect", async (res, next) => {
+app.get("/api/device/disconnect", async (res, next) => {
   checkClient(client);
 
   const result = await client.logout();
@@ -67,7 +67,39 @@ app.get("/api/device-disconnect", async (res, next) => {
   }
 });
 
-app.get("/api/get-qrcode", async (req, res, next) => {
+app.get("/api/device/delete", async (res, next) => {
+  checkClient();
+
+  const result = await client.killServiceWorker();
+
+  try {
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+    });
+  }
+});
+
+app.get("/api/device/restart", async (res, next) => {
+  checkClient(client);
+
+  const result = client.restartService();
+
+  try {
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+    });
+  }
+});
+
+app.get("/api/get-qrcode", async (res, next) => {
   if (client) {
     res.status(200).json({
       status_session: statusSessionScan,
@@ -83,9 +115,13 @@ app.get("/api/get-qrcode", async (req, res, next) => {
       sessionName: sessionName,
     });
   }
+
+  res.status(500).json({
+    error: "error whatsapp server bot ryoogen media",
+  });
 });
 
-app.post("/api/send-text", async (req, res, next) => {
+app.post("/api/send/text", async (req, res, next) => {
   checkClient(client, res);
 
   const { from, text } = req.body;
@@ -98,7 +134,7 @@ app.post("/api/send-text", async (req, res, next) => {
   }
 });
 
-app.post("/api/send-image", async (req, res, next) => {
+app.post("/api/send/image", async (req, res, next) => {
   checkClient(client, res);
 
   const { from, image, image_name, caption } = req.body;
