@@ -1,41 +1,81 @@
+const bodyParser = require("body-parser");
 const express = require("express");
 const venom = require("venom-bot");
 
 const app = express();
 const port = 3000;
 
-// Middleware untuk parsing JSON dan URL-encoded
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 let client;
 
-// Buat sesi Venom-Bot
+var infoAttempts;
+var asciiQRCode;
+var base64QR;
+var urlCodeQR;
+var statusSessionScan;
+var sessionName;
+
+// Mulai server Express segera
+startServer();
+
+// Inisialisasi Venom
 venom
-  .create({
-    session: "ryoogen-session-whatsapp", // nama sesi
-  })
+  .create(
+    {
+      session: "ryoogen-session-whatsapp",
+    },
+    (base64Qrimg, asciiQR, attempts, urlCode) => {
+      infoAttempts = attempts;
+      base64QR = base64Qrimg;
+      asciiQRCode = asciiQR;
+      urlCodeQR = urlCode;
+    },
+    (statusSession, session) => {
+      statusSessionScan = statusSession;
+      sessionName = session;
+    }
+  )
   .then((venomClient) => {
     client = venomClient;
-    startServer();
+    console.log("Venom client initialized successfully");
   })
   .catch((erro) => {
     console.log("Error starting Venom:", erro);
   });
 
-app.get("/api/getuser", async (req, res, next) => {
-  return res.status(200).json({ kocak: "sdfsa" });
-});
-
-app.post("/api/send-text", async (req, res, next) => {
+function checkClient(client, res) {
   if (!client) {
     return res.status(500).json({ error: "Venom client not initialized" });
   }
+}
+
+app.get("/api/get-qrcode", async (req, res, next) => {
+  if (client) {
+    res.status(200).json({
+      status_session: statusSessionScan,
+      sessionName: sessionName,
+    });
+  } else {
+    res.status(200).json({
+      qr: {
+        base64: base64QR,
+        attempts: infoAttempts,
+      },
+      status_session: statusSessionScan,
+      sessionName: sessionName,
+    });
+  }
+});
+
+app.post("/api/send-text", async (req, res, next) => {
+  checkClient(client, res);
 
   const { from, text } = req.body;
 
   try {
-    const result = await client.sendText(from, text); // Menggunakan req.body.form
+    const result = await client.sendText(from, text);
     res.status(200).json({ data: result });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -43,9 +83,7 @@ app.post("/api/send-text", async (req, res, next) => {
 });
 
 app.post("/api/send-image", async (req, res, next) => {
-  if (!client) {
-    return res.status(500).json({ error: "Venom client not initialized" });
-  }
+  checkClient(client, res);
 
   const { from, image, image_name, caption } = req.body;
 
