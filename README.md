@@ -41,7 +41,7 @@ venom
       sessionName = session;
     },
     {
-      browserArgs: ['--no-sandbox', '--disable-setuid-sandbox']  // Tambahkan argumen ini
+      browserArgs: ['--no-sandbox', '--disable-setuid-sandbox']  // Set browserArgs
     }
   )
   .then((venomClient) => {
